@@ -1,13 +1,5 @@
-import requests 
-from io import StringIO
+import os
+from dotenv import load_dotenv, find_dotenv
 
-
-googleDrive = "https://drive.google.com/drive/folders/1my5S5mOPaIk7jkQOv-P62_dpLwAmFpnm"
-response = requests.get(googleDrive).text
-
-with open('googleDrive.html', 'w') as f:
-    f.write(response)
-
-
-
+load_dotenv(find_dotenv())
 
