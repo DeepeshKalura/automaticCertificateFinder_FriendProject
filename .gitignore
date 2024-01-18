@@ -1,3 +1,5 @@
 .venv
 .vscode
 dataset
+cred.json
+.env
