@@ -1,6 +1,6 @@
 import os
 import io
-
+from urllib.parse import urlparse, parse_qs
 from dotenv import load_dotenv, find_dotenv
 from google_mine import create_service
 from googleapiclient.http import MediaIoBaseDownload
@@ -70,9 +70,31 @@ def folder_to_certificate(folder_id , friend_name ) -> bool:
     return found
 
 
+
 def convert_folder_link_to_id(folder_link):
-    folder_id = folder_link.split('/')[-1]
-    return folder_id
+    try:
+        parsed_url = urlparse(folder_link)
+        query_params = parse_qs(parsed_url.query)
+
+        if 'usp' in query_params:
+            folder_link = folder_link.split('?')[0]
+        if not folder_link.startswith("https://drive.google.com/drive/folders/"):
+            raise ValueError("Invalid folder link format. Must start with 'https://drive.google.com/drive/folders/'.")
+
+        folder_id = folder_link.split('/')[-1]
+        
+        if not folder_id:
+            raise ValueError("Invalid folder link. Unable to extract folder ID.")
+
+        return folder_id
+
+    except ValueError as ve:
+        raise ve
+
+    except Exception as e:
+        raise ValueError(f"Error converting folder link to ID: {e}")
+
+
 
 
 def get_pdf_from_file_id(file_id):
