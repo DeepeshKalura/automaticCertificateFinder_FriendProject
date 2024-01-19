@@ -33,3 +33,37 @@ try:
     print(file)
 except Exception as e:
     print(f"file is not right: {e}")
+
+# download this file folder 
+
+# First with the file link 
+
+file_id = '10n2-mQLoLftelod-Mu1EefUFOLjfRHK5'
+
+request = drive_service.files().get_media(fileId = file_id)
+
+fh = io.BytesIO()
+downloader = MediaIoBaseDownload(fd=fh, request=request)
+
+done = False
+
+while not done:
+    status , done = downloader.next_chunk()
+    print('Download Progress {0} %'.format(status.progress() * 100))
+
+
+fh.seek(0)
+
+with open('downloadPdf.pdf', 'wb') as f:
+    f.write(fh.read())
+    f.close()
+
+
+# I have to find the file_id  from the folder_id
+    
+print(f'folder id is :  {folder_id}')
+
+response =  drive_service.files().list(q=f"'{folder_id}' in parents and mimeType = 'application/pdf'").execute()
+
+for file in response.get('files', []):
+    print(f"Found file: {file.get('name')} with id: {file.get('id')}")
