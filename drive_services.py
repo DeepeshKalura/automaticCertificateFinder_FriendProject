@@ -92,12 +92,3 @@ def get_pdf_from_file_id(file_id):
         f.write(fh.read())
         f.close()
 
-
-folder_id = "1my5S5mOPaIk7jkQOv-P62_dpLwAmFpnm"
-friend_name = "Adarsh Negi"
-
-if (folder_to_certificate(folder_id, friend_name)):
-    print("Found")
-else:
-    print("Not Found")
-
