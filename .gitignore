@@ -3,3 +3,6 @@
 dataset
 cred.json
 .env
+__pycache__
+
+*.pickle
