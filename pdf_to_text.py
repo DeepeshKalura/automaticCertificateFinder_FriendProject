@@ -2,16 +2,12 @@ import fitz
 from PIL import Image
 from pytesseract import pytesseract
  
-freindName = "Deepesh"
-
 
 def pdf_to_image_text():
 	doc = fitz.open('checking.pdf')
 	for page in doc: 
 		pix = page.get_pixmap(matrix=fitz.Identity, dpi=None,colorspace=fitz.csRGB, clip=None, alpha=False, annots=True) 
 		pix.save("samplepdfimage%i.jpg" % page.number) 
-
-	
 	im = Image.open("samplepdfimage0.jpg")
 	width, height = im.size
 	left = width / 8
@@ -26,5 +22,3 @@ def pdf_to_image_text():
 	img = Image.open("samplepdfimage0.jpg")
 	text = pytesseract.image_to_string(img)  
 	return text
-
-

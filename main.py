@@ -14,14 +14,8 @@ API_VERSION = 'v3'
 
 drive_service = create_service(os.getenv("CLIENT_SECRET_FILE"), API_NAME, API_VERSION, SCOPE)
 
-folder_id = "1my5S5mOPaIk7jkQOv-P62_dpLwAmFpnm"
-
-# First with the file link 
 
 def get_pdf_from_link (file_id):
-
-    # file_id = '10n2-mQLoLftelod-Mu1EefUFOLjfRHK5'
-
     request = drive_service.files().get_media(fileId = file_id)
 
     fh = io.BytesIO()
@@ -33,7 +27,6 @@ def get_pdf_from_link (file_id):
         status , done = downloader.next_chunk()
         print('Download Progress {0} %'.format(status.progress() * 100))
 
-
     fh.seek(0)
 
     with open('checking.pdf', 'wb') as f:
@@ -42,7 +35,8 @@ def get_pdf_from_link (file_id):
 
 
     
-def folder_to_files(folder_id):
+def folder_to_files(folder_id, friend_name):
+    
     query = f"'{folder_id}' in parents and mimeType = 'application/pdf'"
     nextPageToken = "FirstTime"
     while nextPageToken != None:
@@ -58,7 +52,24 @@ def folder_to_files(folder_id):
             for file in files:
                 # download the file
                 get_pdf_from_link(file.get('id'))
-                pdf_to_image_text()
-            
+                name = pdf_to_image_text()
+
+                if(name == friend_name):
+                    return True
+
         except Exception as e:
-            print(e)
+                print(e)
+    return False
+
+    
+
+folder_id = "1my5S5mOPaIk7jkQOv-P62_dpLwAmFpnm"
+found = folder_to_files(folder_id, "Deepesh Kalura")
+
+if(found):
+    print("checking done")
+else:
+    print("not found")
+
+
+

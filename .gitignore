@@ -6,3 +6,7 @@ cred.json
 __pycache__
 
 *.pickle
+
+#  Intermediate Result
+samplepdfimage0.jpg
+checking.pdf
