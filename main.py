@@ -5,6 +5,8 @@ from dotenv import load_dotenv, find_dotenv
 from google_mine import create_service
 from googleapiclient.http import MediaIoBaseDownload
 
+from pdf_to_text import pdf_to_image_text
+
 load_dotenv(find_dotenv())
 SCOPE = ["https://www.googleapis.com/auth/drive", "https://www.googleapis.com/auth/drive.appdata",  "https://www.googleapis.com/auth/drive.file", "https://www.googleapis.com/auth/drive.metadata", "https://www.googleapis.com/auth/drive.metadata.readonly",  "https://www.googleapis.com/auth/drive.readonly"]
 API_NAME = 'drive'
@@ -34,16 +36,14 @@ def get_pdf_from_link (file_id):
 
     fh.seek(0)
 
-    with open('downloadPdf.pdf', 'wb') as f:
+    with open('checking.pdf', 'wb') as f:
         f.write(fh.read())
         f.close()
 
 
-# I have to find the file_id  from the folder_id
     
-def folder_to_files_code(folder_id):
+def folder_to_files(folder_id):
     query = f"'{folder_id}' in parents and mimeType = 'application/pdf'"
-    count = 0
     nextPageToken = "FirstTime"
     while nextPageToken != None:
         try:
@@ -56,8 +56,9 @@ def folder_to_files_code(folder_id):
             files = response.get('files')
 
             for file in files:
-                # print(f"file name is : {file.get('name')} and id is : {file.get('id')}")
-                count += 1
+                # download the file
+                get_pdf_from_link(file.get('id'))
+                pdf_to_image_text()
             
         except Exception as e:
             print(e)
