@@ -3,7 +3,7 @@ from PIL import Image
 from pytesseract import pytesseract
  
 
-def pdf_to_image_text():
+def pdf_to_image_text() -> str:
 	doc = fitz.open('checking.pdf')
 	for page in doc: 
 		pix = page.get_pixmap(matrix=fitz.Identity, dpi=None,colorspace=fitz.csRGB, clip=None, alpha=False, annots=True) 
@@ -21,4 +21,4 @@ def pdf_to_image_text():
 	pytesseract.tesseract_cmd = r'/usr/bin/tesseract'
 	img = Image.open("samplepdfimage0.jpg")
 	text = pytesseract.image_to_string(img)  
-	return text
+	return text.strip()

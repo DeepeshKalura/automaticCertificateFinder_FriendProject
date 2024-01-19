@@ -25,7 +25,6 @@ def get_pdf_from_link (file_id):
 
     while not done:
         status , done = downloader.next_chunk()
-        print('Download Progress {0} %'.format(status.progress() * 100))
 
     fh.seek(0)
 
@@ -34,9 +33,18 @@ def get_pdf_from_link (file_id):
         f.close()
 
 
+  
+def folder_to_certificate(folder_id , friend_name ) -> bool:
+    """
+    This function checks if a given friend's name is in any of the PDF files in a specific Google Drive folder.
+
+    But this function is very expensive in terms of time and resources.
+
+    Therefore, I need hasing to make it faster.
     
-def folder_to_files(folder_id, friend_name):
+    """
     
+    found = False 
     query = f"'{folder_id}' in parents and mimeType = 'application/pdf'"
     nextPageToken = "FirstTime"
     while nextPageToken != None:
@@ -54,22 +62,42 @@ def folder_to_files(folder_id, friend_name):
                 get_pdf_from_link(file.get('id'))
                 name = pdf_to_image_text()
 
-                if(name == friend_name):
+                if((name.lower()) == (friend_name.lower())):
+                    print("Found")
                     return True
-
         except Exception as e:
                 print(e)
-    return False
+    return found
 
-    
+
+def convert_folder_link_to_id(folder_link):
+    folder_id = folder_link.split('/')[-1]
+    return folder_id
+
+
+def get_pdf_from_file_id(file_id):
+    request = drive_service.files().get_media(fileId = file_id)
+
+    fh = io.BytesIO()
+    downloader = MediaIoBaseDownload(fd=fh, request=request)
+
+    done = False
+
+    while not done:
+        status , done = downloader.next_chunk()
+
+    fh.seek(0)
+
+    with open('checking.pdf', 'wb') as f:
+        f.write(fh.read())
+        f.close()
+
 
 folder_id = "1my5S5mOPaIk7jkQOv-P62_dpLwAmFpnm"
-found = folder_to_files(folder_id, "Deepesh Kalura")
+friend_name = "Adarsh Negi"
 
-if(found):
-    print("checking done")
+if (folder_to_certificate(folder_id, friend_name)):
+    print("Found")
 else:
-    print("not found")
-
-
+    print("Not Found")
 
