@@ -2,19 +2,16 @@ import logging
 
 # level: DEBUG, INFO, WARNING, ERROR, CRITICAL
 
-log = logging.basicConfig(level=logging.DEBUG, filename='log/appFlow.log', filemode='w', format='%(asctime)s - %(filename)s - %(funcName)s - %(levelname)s - %(message)s', datefmt='%d-%b-%y %H:%M:%S')
+logging.basicConfig(level=logging.INFO, filename='appFlow.log', filemode='w', format='%(asctime)s  - %(levelname)s - %(message)s', datefmt='%d-%b-%y %H:%M:%S')
 
-def debugLog(message):
-    logging.debug(message)
-
-def infoLog(message):
+def infoLog(message: str):
     logging.info(message)
 
-def warningLog(message):
+def warningLog(message: str):
     logging.warning(message)
 
-def errorLog(message):
-    logging.exception(message)
+def errorLog(message: str):
+    logging.error(message, exc_info=True)
 
-def criticalLog(message):
+def criticalLog(message: str):
     logging.critical(message)

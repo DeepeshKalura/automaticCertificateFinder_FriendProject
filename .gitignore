@@ -10,3 +10,6 @@ __pycache__
 #  Intermediate Result
 samplepdfimage0.jpg
 checking.pdf
+
+#adding for log
+*.log
