@@ -13,3 +13,6 @@ checking.pdf
 
 #adding for log
 *.log
+
+# for database
+*.db
