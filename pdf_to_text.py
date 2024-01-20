@@ -1,7 +1,10 @@
 import fitz 
 from PIL import Image
 from pytesseract import pytesseract
- 
+import os
+from dotenv import load_dotenv, find_dotenv
+
+load_dotenv(find_dotenv())
 
 def pdf_to_image_text() -> str:
 	doc = fitz.open('checking.pdf')
@@ -18,7 +21,7 @@ def pdf_to_image_text() -> str:
 	im1.save('samplepdfimage0.jpg')
 
 	# Extract text from image
-	pytesseract.tesseract_cmd = r'/usr/bin/tesseract'
+	pytesseract.tesseract_cmd = os.getenv('TESSERACT_CMD')
 	img = Image.open("samplepdfimage0.jpg")
 	text = pytesseract.image_to_string(img)  
 	return text.strip()
