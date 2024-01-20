@@ -2,6 +2,7 @@ import base64
 import streamlit as st
 import drive_services as ds
 from logs import  infoLog, errorLog, criticalLog
+import cache
 
 def displayPDF(file):
     """
@@ -23,9 +24,6 @@ def displayPDF(file):
 
         st.write(f"{e}")
         errorLog(f"Error displaying PDF {e}")
-
-
-
     
 st.title("Certificate Finder")
 
@@ -44,15 +42,28 @@ except Exception as e:
     st.stop()
 
 friend_name = st.text_input("Enter your friend's name")
+friend_name = friend_name.lower()
 
 if st.button("Find"):
     with st.spinner("Finding your certificate...."):
 
-        if (ds.folder_to_certificate(folder_id, friend_name)):
-            st.success("Certificate found!")
-            displayPDF("checking.pdf")
+        response = cache.folder_id_exists(folder_id)
 
+        if (not response):
+            cache.insert_folder(folder_id)
+            if (ds.folder_to_certificate(folder_id, friend_name)):
+                st.success("Certificate found!")
+                displayPDF("checking.pdf")
+            else:
+                st.error("There is no certificate for this name")
         else:
-            st.error("There is no certificate for this name")
-
+            value = cache.file_exists(friend_name, folder_id)
+            if (value is None):
+                if (ds.folder_to_certificate(folder_id, friend_name)):
+                    st.success("Certificate found!")
+                    displayPDF("checking.pdf")
+            else:
+                ds.get_pdf_from_link(response[0])
+                st.success("Certificate found!")
+                displayPDF("checking.pdf")
     criticalLog("End of the program")

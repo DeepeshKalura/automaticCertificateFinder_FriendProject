@@ -4,7 +4,7 @@ from urllib.parse import urlparse, parse_qs
 from dotenv import load_dotenv, find_dotenv
 from google_mine import create_service
 from googleapiclient.http import MediaIoBaseDownload
-
+import cache
 from pdf_to_text import pdf_to_image_text
 from logs import infoLog, errorLog, criticalLog
 
@@ -15,24 +15,6 @@ API_VERSION = 'v3'
 
 drive_service = create_service(os.getenv("CLIENT_SECRET_FILE"), API_NAME, API_VERSION, SCOPE)
 
-
-def get_pdf_from_link (file_id):
-    infoLog("Start getting the pdf from link")
-    request = drive_service.files().get_media(fileId = file_id)
-
-    fh = io.BytesIO()
-    downloader = MediaIoBaseDownload(fd=fh, request=request)
-
-    done = False
-
-    while not done:
-        status , done = downloader.next_chunk()
-
-    fh.seek(0)
-
-    with open('checking.pdf', 'wb') as f:
-        f.write(fh.read())
-        f.close()
 
 
   
@@ -62,14 +44,16 @@ def folder_to_certificate(folder_id , friend_name ) -> bool:
             for file in files:
                 # download the file
                 try:
-                    get_pdf_from_link(file.get('id'))
-                    name = pdf_to_image_text()
+                    get_pdf_from_file_id(file.get('id'))
+                    name = pdf_to_image_text().lower()
+                    cache.insert_file(file_id=file.get('id'), name=name, file_name=file.get('name'), folder_id=folder_id)
                 except Exception as e:
                     errorLog(f"Error getting the pdf from link {e}")
                     continue
-                if((friend_name.lower() in name.lower())):
+                if((friend_name in name)):
                     infoLog("Certificate found")
                     return True
+
         except Exception as e:
                 errorLog(f"Error getting the pdf from link {e}")
     return found
