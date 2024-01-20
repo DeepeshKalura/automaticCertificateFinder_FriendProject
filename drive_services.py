@@ -6,6 +6,7 @@ from google_mine import create_service
 from googleapiclient.http import MediaIoBaseDownload
 
 from pdf_to_text import pdf_to_image_text
+import logs
 
 load_dotenv(find_dotenv())
 SCOPE = ["https://www.googleapis.com/auth/drive", "https://www.googleapis.com/auth/drive.appdata",  "https://www.googleapis.com/auth/drive.file", "https://www.googleapis.com/auth/drive.metadata", "https://www.googleapis.com/auth/drive.metadata.readonly",  "https://www.googleapis.com/auth/drive.readonly"]
@@ -16,6 +17,7 @@ drive_service = create_service(os.getenv("CLIENT_SECRET_FILE"), API_NAME, API_VE
 
 
 def get_pdf_from_link (file_id):
+    logs.debugLog("Start getting the pdf from link")
     request = drive_service.files().get_media(fileId = file_id)
 
     fh = io.BytesIO()
@@ -43,7 +45,7 @@ def folder_to_certificate(folder_id , friend_name ) -> bool:
     Therefore, I need hasing to make it faster.
     
     """
-    
+    logs.debugLog("Start searching for the certificate")
     found = False 
     query = f"'{folder_id}' in parents and mimeType = 'application/pdf'"
     nextPageToken = "FirstTime"
@@ -59,19 +61,23 @@ def folder_to_certificate(folder_id , friend_name ) -> bool:
 
             for file in files:
                 # download the file
-                get_pdf_from_link(file.get('id'))
-                name = pdf_to_image_text()
-
-                if((name.lower()) == (friend_name.lower())):
-                    print("Found")
+                try:
+                    get_pdf_from_link(file.get('id'))
+                    name = pdf_to_image_text()
+                except Exception as e:
+                    logs.errorLog(f"Error getting the pdf from link {e}")
+                    continue
+                if((friend_name.lower() in name.lower())):
+                    logs.infoLog("Certificate found")
                     return True
         except Exception as e:
-                print(e)
+                logs.errorLog(f"Error getting the pdf from link {e}")
     return found
 
 
 
 def convert_folder_link_to_id(folder_link):
+    logs.debugLog("Start Converting the folder link to folder id")
     try:
         parsed_url = urlparse(folder_link)
         query_params = parse_qs(parsed_url.query)
@@ -84,20 +90,25 @@ def convert_folder_link_to_id(folder_link):
         folder_id = folder_link.split('/')[-1]
         
         if not folder_id:
+            logs.criticalLog("Invalid folder link. Unable to extract folder ID.")
             raise ValueError("Invalid folder link. Unable to extract folder ID.")
 
+        logs.infoLog("Folder link converted to folder ID successfully")
         return folder_id
 
     except ValueError as ve:
+        logs.errorLog(f"Error converting folder link to ID: {ve}")
         raise ve
 
     except Exception as e:
+        logs.errorLog(f"Error converting folder link to ID: {e}")
         raise ValueError(f"Error converting folder link to ID: {e}")
 
 
 
 
 def get_pdf_from_file_id(file_id):
+    logs.debugLog("Start getting the pdf from link")
     request = drive_service.files().get_media(fileId = file_id)
 
     fh = io.BytesIO()
@@ -113,4 +124,5 @@ def get_pdf_from_file_id(file_id):
     with open('checking.pdf', 'wb') as f:
         f.write(fh.read())
         f.close()
+    logs.infoLog("PDF downloaded successfully")
 

@@ -7,7 +7,16 @@ from dotenv import load_dotenv, find_dotenv
 load_dotenv(find_dotenv())
 
 def pdf_to_image_text() -> str:
-	doc = fitz.open('checking.pdf')
+	"""
+	Converts a PDF file to image and extracts text from the image.
+
+	Returns:
+		str: The extracted text from the PDF image.
+	"""
+	try:
+		doc = fitz.open('checking.pdf')
+	except:
+		raise "File not found"
 	for page in doc: 
 		pix = page.get_pixmap(matrix=fitz.Identity, dpi=None,colorspace=fitz.csRGB, clip=None, alpha=False, annots=True) 
 		pix.save("samplepdfimage%i.jpg" % page.number) 
@@ -19,8 +28,6 @@ def pdf_to_image_text() -> str:
 	bottom = height - height/2.4
 	im1 = im.crop((left, top, right, bottom))
 	im1.save('samplepdfimage0.jpg')
-
-	# Extract text from image
 	pytesseract.tesseract_cmd = os.getenv('TESSERACT_CMD')
 	img = Image.open("samplepdfimage0.jpg")
 	text = pytesseract.image_to_string(img)  
