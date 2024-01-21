@@ -15,9 +15,6 @@ API_VERSION = 'v3'
 
 drive_service = create_service(os.getenv("CLIENT_SECRET_FILE"), API_NAME, API_VERSION, SCOPE)
 
-
-
-  
 def folder_to_certificate(folder_id , friend_name ) -> bool:
     """
     This function checks if a given friend's name is in any of the PDF files in a specific Google Drive folder.
