@@ -1,8 +1,8 @@
 import base64
 import streamlit as st
-import drive_services as ds
-from logs import  infoLog, errorLog, criticalLog
-import cache
+import app.drive_services as ds
+from app.logs import  infoLog, errorLog, criticalLog
+import app.cache as cache
 
 def displayPDF(file):
     """

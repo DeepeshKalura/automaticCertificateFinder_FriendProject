@@ -2,11 +2,11 @@ import os
 import io
 from urllib.parse import urlparse, parse_qs
 from dotenv import load_dotenv, find_dotenv
-from google_mine import create_service
+from app.google_mine import create_service
 from googleapiclient.http import MediaIoBaseDownload
-import cache
-from pdf_to_text import pdf_to_image_text
-from logs import infoLog, errorLog, criticalLog
+import app.cache as cache
+from app.pdf_to_text import pdf_to_image_text
+from app.logs import infoLog, errorLog, criticalLog
 
 load_dotenv(find_dotenv())
 SCOPE = ["https://www.googleapis.com/auth/drive", "https://www.googleapis.com/auth/drive.appdata",  "https://www.googleapis.com/auth/drive.file", "https://www.googleapis.com/auth/drive.metadata", "https://www.googleapis.com/auth/drive.metadata.readonly",  "https://www.googleapis.com/auth/drive.readonly"]

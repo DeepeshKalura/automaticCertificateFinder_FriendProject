@@ -1,5 +1,5 @@
 import sqlite3 
-from logs import infoLog
+from app.logs import infoLog
 import time
 
 

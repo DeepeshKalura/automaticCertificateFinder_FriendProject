@@ -5,7 +5,7 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from google.auth.transport.requests import Request
 
-from logs import infoLog, criticalLog
+from app.logs import infoLog, criticalLog
 
 def create_service(client_secret_file, api_name, api_version, *scopes):
     

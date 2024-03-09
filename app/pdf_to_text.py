@@ -3,7 +3,7 @@ from PIL import Image
 from pytesseract import pytesseract
 import os
 from dotenv import load_dotenv, find_dotenv
-from logs import infoLog, errorLog, criticalLog
+from app.logs import infoLog, errorLog, criticalLog
 
 
 load_dotenv(find_dotenv())
