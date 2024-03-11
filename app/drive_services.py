@@ -72,11 +72,13 @@ def convert_folder_link_to_id(folder_link: str) -> str:
     Raises:
         ValueError: If the provided link is not a valid Google Drive folder link.
     """
-    if "https://drive.google.com/drive/folders" in folder_link:
+    if "https://drive.google.com/drive/folders/" in folder_link:
         if "?usp=drive_link" in folder_link:
             folder_link = remove_query_param(folder_link, "?usp=drive_link")
      
         folder_id = folder_link.split('/')[-1]
+        if(folder_id == "folder"):
+            ValueError("Smart Hora Hai Londey, Kuch toh sahi daal.")
         return folder_id
     else:
         raise ValueError("The provided link is not a valid Google Drive folder link.")
