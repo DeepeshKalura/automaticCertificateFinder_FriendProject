@@ -1,12 +1,12 @@
 import os
 import io
-from urllib.parse import urlparse, parse_qs
 from dotenv import load_dotenv, find_dotenv
-from app.google_mine import create_service
 from googleapiclient.http import MediaIoBaseDownload
+
 import app.cache as cache
+from app.google_mine import create_service
+from app.helper import remove_query_param
 from app.pdf_to_text import pdf_to_image_text
-# from app.logs import infoLog, errorLog, criticalLog
 
 load_dotenv(find_dotenv())
 SCOPE = ["https://www.googleapis.com/auth/drive", "https://www.googleapis.com/auth/drive.appdata",  "https://www.googleapis.com/auth/drive.file", "https://www.googleapis.com/auth/drive.metadata", "https://www.googleapis.com/auth/drive.metadata.readonly",  "https://www.googleapis.com/auth/drive.readonly"]
@@ -58,38 +58,33 @@ def folder_to_certificate(folder_id , friend_name ) -> bool:
 
 
 
-def convert_folder_link_to_id(folder_link):
-    # infoLog("Start Converting the folder link to folder id")
-    try:
-        parsed_url = urlparse(folder_link)
-        query_params = parse_qs(parsed_url.query)
 
-        if 'usp' in query_params:
-            folder_link = folder_link.split('?')[0]
-        if not folder_link.startswith("https://drive.google.com/drive/folders/"):
-            raise ValueError("Invalid folder link format. Must start with 'https://drive.google.com/drive/folders/'.")
+def convert_folder_link_to_id(folder_link: str) -> str:
+    """
+    Converts a Google Drive folder link to its corresponding folder ID.
 
+    Args:
+        folder_link (str): The Google Drive folder link to be converted.
+
+    Returns:
+        str: The folder ID extracted from the folder link.
+
+    Raises:
+        ValueError: If the provided link is not a valid Google Drive folder link.
+    """
+    if "https://drive.google.com/drive/folders" in folder_link:
+        if "?usp=drive_link" in folder_link:
+            folder_link = remove_query_param(folder_link, "?usp=drive_link")
+     
         folder_id = folder_link.split('/')[-1]
-        
-        if not folder_id:
-            # criticalLog("Invalid folder link. Unable to extract folder ID.")
-            raise ValueError("Invalid folder link. Unable to extract folder ID.")
-
-        # infoLog("Folder link converted to folder ID successfully")
         return folder_id
-
-    except ValueError as ve:
-        # errorLog(f"Error converting folder link to ID: {ve}")
-        raise ve
-
-    except Exception as e:
-        # errorLog(f"Error converting folder link to ID: {e}")
-        raise ValueError(f"Error converting folder link to ID: {e}")
+    else:
+        raise ValueError("The provided link is not a valid Google Drive folder link.")
 
 
 
 
-def get_pdf_from_file_id(file_id):
+def get_pdf_from_file_id(file_id: str):
     # infoLog("Start getting the pdf from link")
     request = drive_service.files().get_media(fileId = file_id)
 
