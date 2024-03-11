@@ -5,7 +5,7 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from google.auth.transport.requests import Request
 
-from app.logs import infoLog, criticalLog
+# from app.logs import infoLog, criticalLog
 
 def create_service(client_secret_file, api_name, api_version, *scopes):
     
@@ -34,10 +34,10 @@ def create_service(client_secret_file, api_name, api_version, *scopes):
 
     try:
         service = build(API_SERVICE_NAME, API_VERSION, credentials=cred)
-        infoLog(f'{API_SERVICE_NAME} service created successfully')
+        # infoLog(f'{API_SERVICE_NAME} service created successfully')
         return service
     except Exception as e:
-        criticalLog(f'Unable to connect: {e}')
+        # criticalLog(f'Unable to connect: {e}')
         return None
 
 def convert_to_RFC_datetime(year=1900, month=1, day=1, hour=0, minute=0):
