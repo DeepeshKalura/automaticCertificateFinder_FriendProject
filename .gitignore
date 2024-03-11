@@ -16,3 +16,7 @@ checking.pdf
 
 # for database
 *.db
+
+#python test cache
+
+.pytest_cache
