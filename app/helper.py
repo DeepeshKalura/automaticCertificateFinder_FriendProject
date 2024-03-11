@@ -15,6 +15,8 @@ def remove_query_param(url: str, param: str) -> str:
         param_end = url.find('&', param_start)
         if param_end == -1:
             param_end = len(url)
+        else:
+            param_end += 1 
         url = url[:param_start] + url[param_end:]
     
     return url
