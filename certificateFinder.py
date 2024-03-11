@@ -1,3 +1,5 @@
+import os
+import sys
 import base64
 import streamlit as st
 import app.drive_services as ds
@@ -10,6 +12,7 @@ def displayPDF(file):
 
     Parameters:
     file (str): The path to the PDF file.
+def displayPDF(file):
 
     Returns:
     None
