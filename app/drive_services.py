@@ -24,7 +24,6 @@ def folder_to_certificate(folder_id , friend_name ) -> bool:
     Therefore, I need hasing to make it faster.
     
     """
-    # infoLog("Start searching for the certificate")
     found = False 
     query = f"'{folder_id}' in parents and mimeType = 'application/pdf'"
     nextPageToken = "FirstTime"
@@ -39,20 +38,16 @@ def folder_to_certificate(folder_id , friend_name ) -> bool:
             files = response.get('files')
 
             for file in files:
-                # download the file
                 try:
                     get_pdf_from_file_id(file.get('id'))
                     name = pdf_to_image_text().lower()
                     cache.insert_file(file_id=file.get('id'), name=name, file_name=file.get('name'), folder_id=folder_id)
                 except Exception as e:
-                    # errorLog(f"Error getting the pdf from link {e}")
                     continue
                 if((friend_name in name)):
-                    # infoLog("Certificate found")
                     return True
 
         except Exception as e:
-                # errorLog(f"Error getting the pdf from link {e}")
                 raise(e)
     return found
 
@@ -87,8 +82,16 @@ def convert_folder_link_to_id(folder_link: str) -> str:
 
 
 def get_pdf_from_file_id(file_id: str):
-    # infoLog("Start getting the pdf from link")
-    request = drive_service.files().get_media(fileId = file_id)
+    """
+    Retrieves a PDF file from Google Drive based on the provided file ID.
+
+    Args:
+        file_id (str): The ID of the file to retrieve.
+
+    Returns:
+        None
+    """
+    request = drive_service.files().get_media(fileId=file_id)
 
     fh = io.BytesIO()
     downloader = MediaIoBaseDownload(fd=fh, request=request)
@@ -96,12 +99,11 @@ def get_pdf_from_file_id(file_id: str):
     done = False
 
     while not done:
-        status , done = downloader.next_chunk()
+        status, done = downloader.next_chunk()
 
     fh.seek(0)
 
     with open('checking.pdf', 'wb') as f:
         f.write(fh.read())
         f.close()
-    # infoLog("PDF downloaded successfully")
 
