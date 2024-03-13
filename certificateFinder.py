@@ -1,32 +1,8 @@
-import os
-import sys
-import base64
 import streamlit as st
 import app.drive_services as ds
-# from app.logs import  infoLog, errorLog, criticalLog
 import app.cache as cache
+from app.helper import displayPDF
 
-def displayPDF(file):
-    """
-    Display a PDF file in the streamlit app.
-
-    Parameters:
-    file (str): The path to the PDF file.
-def displayPDF(file):
-
-    Returns:
-    None
-    """
-    try:
-        with open(file, "rb") as f:
-            base64_pdf = base64.b64encode(f.read()).decode('utf-8')
-        pdf_display = F'<embed src="data:application/pdf;base64,{base64_pdf}" width="700" height="600" type="application/pdf">'
-        st.markdown(pdf_display, unsafe_allow_html=True)
-        # infoLog("PDF displayed successfully")
-    except Exception as e:
-
-        st.write(f"{e}")
-        # errorLog(f"Error displaying PDF {e}")
     
 st.title("Certificate Finder")
 
@@ -36,11 +12,8 @@ st.write("This is a simple web app to help you find your certificate")
 google_drive_link = st.text_input("Paste the google drive folder link")
 
 try :
-    # infoLog("Start Converting the folder link to folder id")
     folder_id = ds.convert_folder_link_to_id(google_drive_link)
-    # infoLog("Folder link converted to folder id successfully")
 except Exception as e:
-    # errorLog(f"Error converting folder link to ID")
     st.write(f"{e}")
     st.stop()
 
@@ -69,4 +42,3 @@ if st.button("Find"):
                 ds.get_pdf_from_link(response[0])
                 st.success("Certificate found!")
                 displayPDF("checking.pdf")
-    # criticalLog("End of the program")
