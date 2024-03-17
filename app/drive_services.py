@@ -1,12 +1,12 @@
 import os
 import io
+from typing import Optional
 from dotenv import load_dotenv, find_dotenv
 from googleapiclient.http import MediaIoBaseDownload
 
-import app.cache as cache
 from app.google_mine import create_service
 from app.helper import remove_query_param
-from app.pdf_to_text import pdf_to_image_text
+from app.pdf_to_text import ocr_pdf_to_image_text
 
 load_dotenv(find_dotenv())
 SCOPE = ["https://www.googleapis.com/auth/drive", "https://www.googleapis.com/auth/drive.appdata",  "https://www.googleapis.com/auth/drive.file", "https://www.googleapis.com/auth/drive.metadata", "https://www.googleapis.com/auth/drive.metadata.readonly",  "https://www.googleapis.com/auth/drive.readonly"]
@@ -40,8 +40,7 @@ def folder_to_certificate(folder_id , friend_name ) -> bool:
             for file in files:
                 try:
                     get_pdf_from_file_id(file.get('id'))
-                    name = pdf_to_image_text().lower()
-                    cache.insert_file(file_id=file.get('id'), name=name, file_name=file.get('name'), folder_id=folder_id)
+                    name = ocr_pdf_to_image_text().lower()
                 except Exception as e:
                     continue
                 if((friend_name in name)):
@@ -50,6 +49,25 @@ def folder_to_certificate(folder_id , friend_name ) -> bool:
         except Exception as e:
                 raise(e)
     return found
+
+def folder_to_list_of_certificate(folder_id:str , friend_name:str, next_page_token ) -> list[list: str]:
+    query = f"'{folder_id}' in parents and mimeType = 'application/pdf'"
+
+    if(next_page_token == None):
+        response =  drive_service.files().list(q=query, orderBy="name").execute()
+    else:
+        response =  drive_service.files().list(q=query, pageToken=next_page_token, orderBy="name").execute()
+
+    next_page_token = response.get('nextPageToken')
+    files = response.get('files')
+
+    return [files, next_page_token]
+
+   
+
+
+
+
 
 
 
